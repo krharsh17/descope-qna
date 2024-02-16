@@ -1,0 +1,37 @@
+{
+    "name": "descope-qna",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev:frontend": "vite",
+        "build:frontend": "vite build",
+        "lint:frontend": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+        "preview:frontend": "vite preview",
+        "dev:backend": "cd backend && node index.js",
+        "dev": "(cd backend && node index.js) & vite"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@descope/node-sdk": "^1.6.2",
+        "@descope/react-sdk": "^2.0.4",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.4",
+        "express": "^4.18.2",
+        "postgres": "^3.4.3",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.43",
+        "@types/react-dom": "^18.2.17",
+        "@vitejs/plugin-react": "^4.2.1",
+        "eslint": "^8.55.0",
+        "eslint-plugin-react": "^7.33.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-refresh": "^0.4.5",
+        "vite": "^5.0.8"
+    }
+}
