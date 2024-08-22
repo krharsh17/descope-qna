@@ -7,8 +7,7 @@ import { AuthProvider } from '@descope/react-sdk';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider
-      projectId={import.meta.env.VITE_DESCOPE_PROJECT_ID}
-    >
+      projectId={import.meta.env.VITE_DESCOPE_PROJECT_ID}>
       <App />
     </AuthProvider>
   </React.StrictMode>,

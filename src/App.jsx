@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-
 import { useDescope, useSession, useUser } from '@descope/react-sdk'
 import { Descope } from '@descope/react-sdk'
 import { getSessionToken } from '@descope/react-sdk';
@@ -8,12 +7,12 @@ const App = () => {
   const { isAuthenticated, isSessionLoading } = useSession()
   const { isUserLoading } = useUser()
 
-  return <><div style={{
+  return <div style={{
     margin: "5vw",
     width: "90vw",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "center",
   }}>
     {!isAuthenticated && (
@@ -26,21 +25,15 @@ const App = () => {
 
     {(isSessionLoading || isUserLoading) && <p>Loading...</p>}
 
-  </div>
-  <div style={{
-    margin: "5vw",
-    width: "90vw",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "center",
-  }}>
-  {!isUserLoading && isAuthenticated && (<LoggedIn />)}
-  </div>
-  </>;
+    {!isUserLoading && isAuthenticated && (<LoggedIn />)}
+  </div>;
 }
 
 const LoggedIn = () => {
+
+  const [questions, setQuestions] = useState([])
+  const [answers, setAnswers] = useState([])
+  const [error, setError] = useState(null)
 
   const { logout } = useDescope()
   const { user } = useUser()
@@ -49,38 +42,57 @@ const LoggedIn = () => {
     logout()
   }, [logout])
 
-
   const fetchQuestions = async () => {
     const sessionToken = getSessionToken();
 
-    // example fetch call with authentication header
-    fetch('http://localhost:3000/get-questions', {
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer ' + sessionToken,
+    try {
+      const response = await fetch('http://localhost:3000/get-questions', {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    })
-      .then(r => r.json())
-      .then(r => {
-        setQuestions(r.questions)
-        setAnswers(r.answers)
-      })
+
+      const data = await response.json();
+
+      if (!data.questions || !data.answers) {
+        throw new Error('Questions or answers are undefined or null');
+      }
+
+      setQuestions(data.questions);
+      setAnswers(data.answers);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setError('Failed to fetch questions or answers');
+    }
   }
+
+
 
   useEffect(() => {
     fetchQuestions()
   }, [])
 
-  const [questions, setQuestions] = useState([])
-  const [answers, setAnswers] = useState([])
+
+
+  const getRoleMessage = () => {
+    return (user.roleNames && user.roleNames.length > 0)
+      ? "For " + user.roleNames[0].toLowerCase() + "s"
+      : "No roles assigned";
+  }
 
   return <>
     <h1>Unit Test</h1>
     <p>
-      {"For " + user.roleNames[0].toLowerCase() + "s"}
+      {getRoleMessage()}
       <br />
       {"Logged in user: " + user.email}
     </p>
+    {error && <p>{error}</p>}
     {questions.map((elem, index) => {
       return <Question questionString={elem} answerString={answers && answers.length !== 0 ? answers[index] : ""} key={index} serialNumber={index + 1} />
     })}
